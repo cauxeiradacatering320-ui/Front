@@ -1,6 +1,6 @@
 import { useAuthStore } from '../store/authStore';
 
-export const API_BASE = process.env.NEXT_PUBLIC_API_NEXT_BACKEND || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3333/api';
+export const API_BASE = process.env.NEXT_PUBLIC_API_NEXT_BACKEND || 'http://localhost:3333/api';
 
 const AUTH_ENDPOINTS = ['/auth/login', '/auth/register', '/auth/refresh'];
 
@@ -67,10 +67,26 @@ export async function apiRequest<T>(
   const data = await resp.json();
 
   if (!resp.ok) {
-    throw new Error(data.message || "Erro inesperado.");
+    throw new Error(data.message || data.error||"Erro inesperado.");
   }
 
   return data;
+}
+
+export async function verifySession(): Promise<{ valid: boolean; user?: { id: string; nome: string; email: string; role: string } }> {
+  try {
+    const response = await fetch(`${API_BASE}/auth/session/verify`, {
+      credentials: 'include',
+    });
+
+    if (!response.ok) {
+      return { valid: false };
+    }
+
+    return response.json();
+  } catch {
+    return { valid: false };
+  }
 }
 
 export async function refreshToken() {

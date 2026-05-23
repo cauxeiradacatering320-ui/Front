@@ -26,6 +26,18 @@ export async function createVideoConteudo(
   );
 }
 
+export async function createTextConteudo(
+  moduloId: string,
+  titulo: string,
+  content: string
+): Promise<Conteudo> {
+  return apiRequest<Conteudo>(
+    `/admin/modulos/${moduloId}/conteudos/texto`,
+    'POST',
+    { titulo, content }
+  );
+}
+
 export async function updateConteudo(
   moduloId: string,
   id: string,
@@ -53,7 +65,7 @@ export async function syncConteudoStatus(moduloId: string, id: string): Promise<
   );
 }
 
-const BUNNY_ACCESS_KEY = process.env.NEXT_PUBLIC_BUNNY_ACCESS_KEY || "6bbde4ba-1439-423b-9a08c91564b0-a852-4e7a";
+const BUNNY_ACCESS_KEY = process.env.NEXT_PUBLIC_BUNNY_ACCESS_KEY || "";
 
 export async function uploadVideoToBunny(uploadUrl: string, file: File): Promise<void> {
   if (!BUNNY_ACCESS_KEY) {

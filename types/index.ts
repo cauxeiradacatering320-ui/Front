@@ -60,6 +60,10 @@ export interface VideoDados {
   status: string;
 }
 
+export interface TextoDados {
+  content: string;
+}
+
 export interface Conteudo {
   id: string;
   modulo_id: string;

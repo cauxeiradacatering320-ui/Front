@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import Link from 'next/link';
 import { apiRequest } from '@/services/api';
+import { useSessionValidation } from '@/hooks/useSessionValidation';
 
 export default function StudentLayout({
   children,
@@ -13,6 +14,8 @@ export default function StudentLayout({
 }) {
   const { user, isLoading, clearAuth } = useAuthStore();
   const router = useRouter();
+
+  useSessionValidation();
 
   useEffect(() => {
     if (!isLoading && !user) {
@@ -52,8 +55,8 @@ export default function StudentLayout({
       <header className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-6">
-            <Link href="/home" className="text-xl font-bold text-gray-800">
-              Plataforma EAD
+            <Link href="/" className="text-xl font-bold text-gray-800">
+              Plataforma EAD 
             </Link>
             <nav className="hidden md:flex items-center gap-4">
               {navLinks.map((link) => (

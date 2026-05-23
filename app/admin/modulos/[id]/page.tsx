@@ -4,9 +4,10 @@ import { use, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useModuloAdmin, useUpdateModulo, useUploadThumbnail } from '@/hooks/useModulos';
-import { useConteudos, useDeleteConteudo, useSyncConteudoStatus, useUpdateConteudo, useReorderConteudos } from '@/hooks/useConteudos';
+import { useConteudos, useDeleteConteudo, useSyncConteudoStatus, useUpdateConteudo, useReorderConteudos, useCreateTextConteudo } from '@/hooks/useConteudos';
 import { VideoUploadForm } from '@/components/VideoUploadForm';
-import { VideoRenderer } from '@/components/content-renderers/video-renderer';
+import { RichTextEditor } from '@/components/RichTextEditor';
+import { VideoRenderer, TextRenderer } from '@/components/content-renderers';
 import { formatKz, formatPriceMask } from '@/utils/format';
 import type { Conteudo } from '@/types';
 import { PiEngine } from 'react-icons/pi';
@@ -25,9 +26,14 @@ export default function AdminModuloDetail({ params }: { params: Promise<{ id: st
 
   const [editando, setEditando] = useState(false);
   const [watchingConteudo, setWatchingConteudo] = useState<Conteudo | null>(null);
+  const [watchingTextConteudo, setWatchingTextConteudo] = useState<Conteudo | null>(null);
   const [editingTitleId, setEditingTitleId] = useState<string | null>(null);
   const [editingTitleValue, setEditingTitleValue] = useState('');
   const [syncError, setSyncError] = useState('');
+  const [textModalOpen, setTextModalOpen] = useState(false);
+  const [textTitulo, setTextTitulo] = useState('');
+  const [textContent, setTextContent] = useState('');
+  const { mutateAsync: criarTexto, isPending: creatingText } = useCreateTextConteudo(id);
   const [titulo, setTitulo] = useState('');
   const [descricao, setDescricao] = useState('');
   const [precoCentavos, setPrecoCentavos] = useState('');
@@ -300,6 +306,15 @@ export default function AdminModuloDetail({ params }: { params: Promise<{ id: st
 
             <VideoUploadForm moduloId={id} />
 
+            <div className="flex gap-3">
+              <button
+                onClick={() => setTextModalOpen(true)}
+                className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm transition-colors"
+              >
+                Adicionar Texto
+              </button>
+            </div>
+
             {syncError && (
               <div className="p-3 bg-red-50 text-red-600 rounded-md text-sm border border-red-100">
                 {syncError}
@@ -405,16 +420,26 @@ export default function AdminModuloDetail({ params }: { params: Promise<{ id: st
                             </svg>
                           </button>
                         )}
-                        {conteudo.tipo === 'video' && (
+                        <button
+                          onClick={() => {
+                            setEditingTitleId(conteudo.id);
+                            setEditingTitleValue(conteudo.titulo);
+                          }}
+                          className="p-1.5 text-gray-400 hover:text-orange-600 transition-colors"
+                          title="Editar título"
+                        >
+                          <PiEngine/>
+                        </button>
+                        {conteudo.tipo === 'texto' && (
                           <button
-                            onClick={() => {
-                              setEditingTitleId(conteudo.id);
-                              setEditingTitleValue(conteudo.titulo);
-                            }}
-                            className="p-1.5 text-gray-400 hover:text-orange-600 transition-colors"
-                            title="Editar título"
+                            onClick={() => setWatchingTextConteudo(conteudo)}
+                            className="p-1.5 text-gray-400 hover:text-blue-600 transition-colors"
+                            title="Visualizar conteúdo"
                           >
-                            <PiEngine/>
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
                           </button>
                         )}
                         {(conteudo.tipo === 'video' &&
@@ -487,6 +512,107 @@ export default function AdminModuloDetail({ params }: { params: Promise<{ id: st
                   </svg>
                 </button>
                 <VideoRenderer conteudo={watchingConteudo} />
+              </div>
+            </div>
+          )}
+
+          {/* Modal Visualizar Conteúdo de Texto */}
+          {watchingTextConteudo && (
+            <div
+              className="fixed inset-0 z-50 flex items-start justify-center bg-black/70 p-4 pt-12 overflow-y-auto"
+              onClick={() => setWatchingTextConteudo(null)}
+            >
+              <div
+                className="relative w-full max-w-3xl bg-white rounded-xl overflow-hidden shadow-2xl mb-12"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 sticky top-0 bg-white z-10">
+                  <h3 className="text-lg font-bold truncate">{watchingTextConteudo.titulo}</h3>
+                  <button
+                    onClick={() => setWatchingTextConteudo(null)}
+                    className="p-1 text-gray-400 hover:text-gray-600 transition-colors shrink-0"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+                <div className="p-6">
+                  <TextRenderer conteudo={watchingTextConteudo} />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Modal Criar Conteúdo de Texto */}
+          {textModalOpen && (
+            <div
+              className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4"
+              onClick={() => setTextModalOpen(false)}
+            >
+              <div
+                className="relative w-full max-w-3xl bg-white rounded-xl overflow-hidden shadow-2xl"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+                  <h3 className="text-lg font-bold">Adicionar Conteúdo de Texto</h3>
+                  <button
+                    onClick={() => setTextModalOpen(false)}
+                    className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+
+                <div className="p-6 space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Título</label>
+                    <input
+                      type="text"
+                      value={textTitulo}
+                      onChange={(e) => setTextTitulo(e.target.value)}
+                      placeholder="Ex: Introdução ao módulo"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Conteúdo</label>
+                    <RichTextEditor
+                      content={textContent}
+                      onChange={setTextContent}
+                    />
+                  </div>
+
+                  <div className="flex items-center gap-3 pt-2">
+                    <button
+                      onClick={async () => {
+                        if (!textTitulo.trim()) return;
+                        try {
+                          await criarTexto({ titulo: textTitulo.trim(), content: textContent });
+                          setTextModalOpen(false);
+                          setTextTitulo('');
+                          setTextContent('');
+                        } catch (err: any) {
+                          alert(err.message);
+                        }
+                      }}
+                      disabled={creatingText || !textTitulo.trim()}
+                      className="px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-medium rounded-lg transition-colors disabled:cursor-not-allowed"
+                    >
+                      {creatingText ? 'Criando...' : 'Criar Conteúdo'}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setTextModalOpen(false)}
+                      className="px-6 py-2 text-gray-700 hover:text-gray-900 font-medium"
+                    >
+                      Cancelar
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           )}

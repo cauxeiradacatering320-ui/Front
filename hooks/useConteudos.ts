@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   fetchConteudos,
   createVideoConteudo,
+  createTextConteudo,
   updateConteudo,
   reorderConteudos,
   syncConteudoStatus,
@@ -28,6 +29,20 @@ export function useConteudos(moduloId: string) {
       const data = query.state.data;
       if (!data) return false;
       return needsPolling(data) ? 5000 : false;
+    },
+  });
+}
+
+export function useCreateTextConteudo(moduloId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ titulo, content }: { titulo: string; content: string }) =>
+      createTextConteudo(moduloId, titulo, content),
+    onSuccess: (conteudo) => {
+      queryClient.setQueryData<Conteudo[]>(['conteudos', moduloId], (old) =>
+        old ? [...old, conteudo] : [conteudo]
+      );
     },
   });
 }

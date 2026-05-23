@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import Link from 'next/link';
 import { apiRequest } from '@/services/api';
+import { useSessionValidation } from '@/hooks/useSessionValidation';
 
 export default function AdminLayout({
   children,
@@ -13,6 +14,8 @@ export default function AdminLayout({
 }) {
   const { user, isLoading, clearAuth } = useAuthStore();
   const router = useRouter();
+
+  useSessionValidation();
 
   useEffect(() => {
     if (!isLoading && !user) {
