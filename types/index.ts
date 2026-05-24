@@ -2,7 +2,10 @@ export interface User {
   id: string;
   nome: string;
   email: string;
+  telefone?: string | null;
   role: 'admin' | 'produtor' | 'aluno';
+  ativo?: boolean;
+  criado_em?: string;
 }
 
 export interface AuthResponse {
@@ -62,6 +65,21 @@ export interface VideoDados {
 
 export interface TextoDados {
   content: string;
+}
+
+export interface MeuModulo extends Modulo {
+  acesso_id: string;
+  acesso_status: string;
+  iniciado_em: string;
+  expira_em: string | null;
+  origem_acesso: string;
+}
+
+export interface ConteudoComProgresso extends Conteudo {
+  progresso_id: string | null;
+  progresso_completo: boolean | null;
+  progresso_porcentagem: number | null;
+  progresso_completado_em: string | null;
 }
 
 export interface Conteudo {
