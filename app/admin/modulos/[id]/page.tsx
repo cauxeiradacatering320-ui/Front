@@ -264,7 +264,7 @@ export default function AdminModuloDetail({ params }: { params: Promise<{ id: st
             <div>
               <label className="block text-sm font-medium text-gray-700">Preço</label>
               <p className="text-gray-900">
-                {modulo.gratuito ? 'Grátis' : formatKz(modulo.preco_centavos)}
+                {modulo.gratuito ? 'Grátis' : formatPriceMask(String(modulo.preco_centavos))}
               </p>
             </div>
             <div>

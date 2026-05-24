@@ -49,6 +49,7 @@ export default function AdminLayout({
     { href: '/admin', label: 'Dashboard' },
     { href: '/admin/usuarios', label: 'Usuários' },
     { href: '/admin/modulos', label: 'Módulos' },
+    { href: '/admin/pagamentos', label: 'Pagamentos' },
     { href: '/admin/configuracoes', label: 'Configurações' },
   ];
 

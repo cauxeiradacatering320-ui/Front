@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useModulosAdmin } from '@/hooks/useModulos';
-import { formatKz } from '@/utils/format';
+import { formatKz, formatPriceMask } from '@/utils/format';
 import React, { useEffect, useState } from 'react';
 import { Modulo } from '@/types';
 
@@ -78,7 +78,7 @@ export default function AdminModulos() {
                       {modulo.status}
                     </span>
                     <span className="text-sm text-gray-500">
-                      {modulo.gratuito ? 'Grátis' : formatKz(modulo.preco_centavos)}
+                      {modulo.gratuito ? 'Grátis' : `${formatPriceMask(String(modulo.preco_centavos))}KZ`}
                     </span>
                   </div>
                 </div>

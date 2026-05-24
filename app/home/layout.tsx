@@ -47,6 +47,7 @@ export default function StudentLayout({
     { href: '/home', label: 'Dashboard' },
     { href: '/home/modulos', label: 'Meus Módulos' },
     { href: '/home/certificados', label: 'Certificados' },
+    { href: '/home/pagamentos', label: 'Pagamentos' },
     { href: '/home/configuracoes', label: 'Configurações' },
   ];
 
