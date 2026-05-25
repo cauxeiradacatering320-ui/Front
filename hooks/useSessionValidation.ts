@@ -2,31 +2,30 @@
 
 import { useEffect, useRef } from 'react';
 import { useAuthStore } from '@/store/authStore';
-import { verifySession } from '@/services/api';
+import { API_BASE } from '@/services/api';
 import { useRouter } from 'next/navigation';
 import { setAuthCookies } from '@/lib/cookies';
 
 export function useSessionValidation() {
-  const { user, isLoading, setAuth, clearAuth } = useAuthStore();
+  const { user, isLoading, accessToken, clearAuth } = useAuthStore();
   const router = useRouter();
   const validated = useRef(false);
 
   useEffect(() => {
-    if (isLoading || !user || validated.current) return;
+    if (isLoading || !user || !accessToken || validated.current) return;
 
     validated.current = true;
 
-    verifySession().then((result) => {
-      if (!result.valid) {
+    fetch(`${API_BASE}/auth/me`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error('Sessão inválida');
+        setAuthCookies(user);
+      })
+      .catch(() => {
         clearAuth();
         router.push('/login');
-      } else if (result.user) {
-        setAuth(
-          { id: result.user.id, nome: result.user.nome, email: result.user.email, role: result.user.role as 'admin' | 'produtor' | 'aluno' },
-          useAuthStore.getState().accessToken || ''
-        );
-        setAuthCookies(result.user);
-      }
-    });
-  }, [isLoading, user, router, setAuth, clearAuth]);
+      });
+  }, [isLoading, user, accessToken, router, clearAuth]);
 }
