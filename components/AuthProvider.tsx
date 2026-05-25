@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { useAuthStore } from '../store/authStore';
 import { API_BASE, refreshToken } from '../services/api';
+import { setAuthCookies } from '@/lib/cookies';
 
 function isTokenExpired(token: string): boolean {
   try {
@@ -29,12 +30,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const initAuth = async () => {
-      const { accessToken } = useAuthStore.getState();
+      const { accessToken, user } = useAuthStore.getState();
 
       if (accessToken) {
         if (!isTokenExpired(accessToken)) {
           const valid = await verifySession(accessToken);
           if (valid) {
+            if (user) setAuthCookies(user);
             setLoading(false);
             return;
           }

@@ -5,6 +5,7 @@ import { apiRequest } from '@/services/api';
 import { useAuthStore, type User } from '@/store/authStore';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { setAuthCookies } from '@/lib/cookies';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -23,6 +24,7 @@ export default function LoginPage() {
       const data = await apiRequest<{ user: User; accessToken: string }>('/auth/login', 'POST', { email, senha });
 
       setAuth(data.user, data.accessToken);
+      setAuthCookies(data.user);
 
       if (data.user.role === 'admin') {
         router.push('/admin');

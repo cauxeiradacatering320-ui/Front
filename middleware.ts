@@ -2,13 +2,13 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
-  const refreshToken = request.cookies.get('refresh_token')?.value;
+  const sessionToken = request.cookies.get('refresh_token')?.value || request.cookies.get('__session')?.value;
   const userRole = request.cookies.get('user_role')?.value;
   const { pathname } = request.nextUrl;
 
   const isAuthRoute = pathname === '/login' || pathname === '/register';
 
-  if (isAuthRoute && refreshToken) {
+  if (isAuthRoute && sessionToken) {
     if (userRole === 'admin') {
       return NextResponse.redirect(new URL('/admin', request.url));
     }
@@ -18,7 +18,7 @@ export function middleware(request: NextRequest) {
   const isHomeRoute = pathname.startsWith('/home');
   const isAdminRoute = pathname.startsWith('/admin');
 
-  if (!refreshToken && (isHomeRoute || isAdminRoute)) {
+  if (!sessionToken && (isHomeRoute || isAdminRoute)) {
     return NextResponse.redirect(new URL('/login', request.url));
   }
 

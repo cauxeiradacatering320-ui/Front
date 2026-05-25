@@ -6,6 +6,7 @@ import { useEffect } from 'react';
 import Link from 'next/link';
 import { apiRequest } from '@/services/api';
 import { useSessionValidation } from '@/hooks/useSessionValidation';
+import { clearAuthCookies } from '@/lib/cookies';
 
 export default function StudentLayout({
   children,
@@ -30,6 +31,7 @@ export default function StudentLayout({
 
     }
     clearAuth();
+    clearAuthCookies();
     router.push('/login');
   };
 

@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react';
 import { useAuthStore } from '@/store/authStore';
 import { verifySession } from '@/services/api';
 import { useRouter } from 'next/navigation';
+import { setAuthCookies } from '@/lib/cookies';
 
 export function useSessionValidation() {
   const { user, isLoading, setAuth, clearAuth } = useAuthStore();
@@ -24,6 +25,7 @@ export function useSessionValidation() {
           { id: result.user.id, nome: result.user.nome, email: result.user.email, role: result.user.role as 'admin' | 'produtor' | 'aluno' },
           useAuthStore.getState().accessToken || ''
         );
+        setAuthCookies(result.user);
       }
     });
   }, [isLoading, user, router, setAuth, clearAuth]);

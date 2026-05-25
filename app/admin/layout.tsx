@@ -6,6 +6,7 @@ import { useEffect } from 'react';
 import Link from 'next/link';
 import { apiRequest } from '@/services/api';
 import { useSessionValidation } from '@/hooks/useSessionValidation';
+import { clearAuthCookies } from '@/lib/cookies';
 
 export default function AdminLayout({
   children,
@@ -32,6 +33,7 @@ export default function AdminLayout({
 
     }
     clearAuth();
+    clearAuthCookies();
     router.push('/login');
   };
 
