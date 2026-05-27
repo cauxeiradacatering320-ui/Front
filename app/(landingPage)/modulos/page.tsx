@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useModulosPublic } from '@/hooks/useModulos';
-import { formatKz } from '@/utils/format';
+import {formatPriceMask } from '@/utils/format';
 
 export default function ModulosPage() {
   const { data: modulos, isLoading, error } = useModulosPublic();
@@ -48,7 +48,7 @@ export default function ModulosPage() {
                 </p>
                 <div className="flex items-center justify-between">
                   <span className="text-lg font-bold text-blue-600">
-                    {modulo.gratuito ? 'Grátis' : formatKz(modulo.preco_centavos)}
+                    {modulo.gratuito ? 'Grátis' : `${formatPriceMask(String(modulo.preco_centavos))}KZ`}
                   </span>
                   {modulo.duracao_acesso_dias && (
                     <span className="text-xs text-gray-400">{modulo.duracao_acesso_dias} dias</span>

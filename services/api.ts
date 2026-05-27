@@ -1,5 +1,5 @@
 import { useAuthStore } from '../store/authStore';
-import { setAuthCookies } from '@/lib/cookies';
+import { setAuthCookies, clearAuthCookies } from '@/lib/cookies';
 
 export const API_BASE = process.env.NEXT_PUBLIC_API_NEXT_BACKEND || 'http://localhost:3333/api';
 
@@ -59,6 +59,8 @@ export async function apiRequest<T>(
     } else {
       useAuthStore.getState().clearAuth();
       if (typeof window !== 'undefined') {
+        clearAuthCookies();
+        localStorage.removeItem('auth-storage');
         window.location.href = '/login';
       }
       throw new Error("Sessão expirada. Faça login novamente.");

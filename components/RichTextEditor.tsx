@@ -6,9 +6,10 @@ import Underline from '@tiptap/extension-underline';
 import LinkExtension from '@tiptap/extension-link';
 import TextAlign from '@tiptap/extension-text-align';
 import Highlight from '@tiptap/extension-highlight';
+import Color from '@tiptap/extension-color';
 import { ResizableImage } from './extensions/ResizableImage';
 import { compressImage } from '@/utils/compressImage';
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useRef, useEffect } from 'react';
 
 interface RichTextEditorProps {
   content: string;
@@ -31,19 +32,31 @@ const MenuButton = ({
     onClick={onClick}
     title={title}
     className={`p-1.5 rounded transition-colors ${
-      active ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:bg-gray-100'
+      active ? 'bg-[#D4AF37]/20 text-[#D4AF37]' : 'text-neutral-400 hover:text-white hover:bg-neutral-800'
     }`}
   >
     {children}
   </button>
 );
 
-const Divider = () => <span className="w-px h-5 bg-gray-300 mx-1" />;
+const Divider = () => <span className="w-px h-5 bg-neutral-700 mx-1" />;
 
 export function RichTextEditor({ content, onChange }: RichTextEditorProps) {
   const [imgWidth, setImgWidth] = useState('');
   const [linkUrl, setLinkUrl] = useState('');
   const [showLinkInput, setShowLinkInput] = useState(false);
+  const [showColorPicker, setShowColorPicker] = useState(false);
+  const colorPickerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (colorPickerRef.current && !colorPickerRef.current.contains(e.target as Node)) {
+        setShowColorPicker(false);
+      }
+    };
+    if (showColorPicker) document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showColorPicker]);
 
   const editor = useEditor({
     extensions: [
@@ -51,6 +64,8 @@ export function RichTextEditor({ content, onChange }: RichTextEditorProps) {
         heading: { levels: [2, 3, 4] },
       }),
       Underline,
+
+      Color,
       Highlight.configure({ multicolor: true }),
       ResizableImage.configure({
         allowBase64: true,
@@ -58,7 +73,7 @@ export function RichTextEditor({ content, onChange }: RichTextEditorProps) {
       }),
       LinkExtension.configure({
         openOnClick: true,
-        HTMLAttributes: { class: 'text-blue-600 underline hover:text-blue-800' },
+        HTMLAttributes: { class: 'text-[#D4AF37] underline hover:text-[#B87333]' },
       }),
       TextAlign.configure({
         types: ['heading', 'paragraph'],
@@ -71,7 +86,7 @@ export function RichTextEditor({ content, onChange }: RichTextEditorProps) {
     },
     editorProps: {
       attributes: {
-        class: 'prose prose-sm max-w-none focus:outline-none min-h-[200px] px-4 py-3',
+        class: 'prose prose-sm max-w-none focus:outline-none min-h-[200px] px-4 py-3 text-white prose-headings:text-white prose-p:text-neutral-300 prose-a:text-[#D4AF37] prose-strong:text-white prose-code:text-neutral-300 prose-code:bg-neutral-800 prose-pre:bg-neutral-900 prose-pre:text-neutral-300 prose-blockquote:text-neutral-300 prose-blockquote:border-l-[#D4AF37] prose-li:text-neutral-300 prose-ol:text-neutral-300 prose-ul:text-neutral-300',
       },
     },
   });
@@ -132,9 +147,9 @@ export function RichTextEditor({ content, onChange }: RichTextEditorProps) {
   if (!editor) return null;
 
   return (
-    <div className="border border-gray-300 rounded-lg overflow-hidden flex flex-col">
+    <div className="border border-neutral-800 rounded-xl overflow-hidden flex flex-col bg-[#050505]">
       {/* Toolbar */}
-      <div className="flex flex-wrap items-center gap-0.5 px-2 py-1.5 border-b border-gray-200 bg-gray-50 shrink-0">
+      <div className="flex flex-wrap items-center gap-0.5 px-2 py-1.5 border-b border-neutral-800 bg-[#0a0a0a] shrink-0">
         <MenuButton
           onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
           active={editor.isActive('heading', { level: 2 })}
@@ -211,6 +226,45 @@ export function RichTextEditor({ content, onChange }: RichTextEditorProps) {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
           </svg>
         </MenuButton>
+
+        <div className="relative" ref={colorPickerRef}>
+          <MenuButton
+            onClick={() => setShowColorPicker(!showColorPicker)}
+            active={showColorPicker}
+            title="Cor do texto"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+            </svg>
+          </MenuButton>
+          {showColorPicker && (
+            <div className="absolute top-full left-0 mt-1 p-2 bg-[#0a0a0a] border border-neutral-700 rounded-xl shadow-2xl z-50 grid grid-cols-6 gap-1">
+              {['#FFFFFF', '#D4AF37', '#EF4444', '#F97316', '#EAB308', '#22C55E', '#06B6D4', '#3B82F6', '#8B5CF6', '#EC4899', '#78716C', '#000000'].map((color) => (
+                <button
+                  key={color}
+                  type="button"
+                  onClick={() => {
+                    editor.chain().focus().setColor(color).run();
+                    setShowColorPicker(false);
+                  }}
+                  className="w-6 h-6 rounded-lg border border-neutral-700 hover:scale-110 transition-transform"
+                  style={{ backgroundColor: color }}
+                  title={color}
+                />
+              ))}
+              <button
+                type="button"
+                onClick={() => {
+                  editor.chain().focus().unsetColor().run();
+                  setShowColorPicker(false);
+                }}
+                className="col-span-full mt-1 text-xs text-neutral-400 hover:text-white transition-colors py-1"
+              >
+                Remover cor
+              </button>
+            </div>
+          )}
+        </div>
 
         <Divider />
 
@@ -325,13 +379,13 @@ export function RichTextEditor({ content, onChange }: RichTextEditorProps) {
 
       {/* Link input bar */}
       {showLinkInput && (
-        <div className="flex items-center gap-2 px-3 py-2 border-b border-gray-200 bg-blue-50 shrink-0">
+        <div className="flex items-center gap-2 px-3 py-2 border-b border-neutral-800 bg-[#0a0a0a] shrink-0">
           <input
             type="url"
             value={linkUrl}
             onChange={(e) => setLinkUrl(e.target.value)}
             placeholder="https://..."
-            className="flex-1 px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none"
+            className="flex-1 px-2 py-1 text-sm bg-[#050505] border border-neutral-700 rounded text-white placeholder-neutral-600 focus:outline-none focus:border-[#D4AF37]/50"
             autoFocus
             onKeyDown={(e) => {
               if (e.key === 'Enter') handleSetLink();
@@ -341,7 +395,7 @@ export function RichTextEditor({ content, onChange }: RichTextEditorProps) {
           <button
             type="button"
             onClick={handleSetLink}
-            className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
+            className="px-3 py-1 text-sm bg-[#D4AF37] text-black font-semibold rounded hover:bg-[#B87333] transition-colors"
           >
             {linkUrl ? 'Atualizar' : 'Adicionar'}
           </button>
@@ -353,7 +407,7 @@ export function RichTextEditor({ content, onChange }: RichTextEditorProps) {
                 setShowLinkInput(false);
                 setLinkUrl('');
               }}
-              className="px-3 py-1 text-sm bg-red-500 text-white rounded hover:bg-red-600"
+              className="px-3 py-1 text-sm bg-red-800/60 text-red-400 rounded hover:bg-red-700/70 transition-colors"
             >
               Remover
             </button>
@@ -363,21 +417,21 @@ export function RichTextEditor({ content, onChange }: RichTextEditorProps) {
 
       {/* Image resize toolbar */}
       {imageActive && (
-        <div className="flex items-center gap-2 px-3 py-2 border-b border-gray-200 bg-yellow-50 shrink-0">
-          <span className="text-xs text-gray-600 font-medium">Imagem:</span>
-          <label className="text-xs text-gray-500">Largura:</label>
+        <div className="flex items-center gap-2 px-3 py-2 border-b border-neutral-800 bg-[#0a0a0a] shrink-0">
+          <span className="text-xs text-neutral-400 font-medium">Imagem:</span>
+          <label className="text-xs text-neutral-500">Largura:</label>
           <input
             type="number"
             value={imgWidth || imageWidth}
             onChange={(e) => setImgWidth(e.target.value)}
             placeholder={imageWidth || 'auto'}
-            className="w-20 px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none"
+            className="w-20 px-2 py-1 text-sm bg-[#050505] border border-neutral-700 rounded text-white placeholder-neutral-600 focus:outline-none focus:border-[#D4AF37]/50"
           />
-          <span className="text-xs text-gray-400">px</span>
+          <span className="text-xs text-neutral-500">px</span>
           <button
             type="button"
             onClick={() => applyImageWidth(imgWidth)}
-            className="px-2 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700"
+            className="px-2 py-1 text-xs bg-[#D4AF37] text-black font-semibold rounded hover:bg-[#B87333] transition-colors"
           >
             Aplicar
           </button>
@@ -388,14 +442,14 @@ export function RichTextEditor({ content, onChange }: RichTextEditorProps) {
               onClick={() => applyImageWidth(String(w))}
               className={`px-2 py-1 text-xs rounded border transition-colors ${
                 String(imageWidth) === String(w)
-                  ? 'bg-blue-100 border-blue-400 text-blue-700'
-                  : 'bg-white border-gray-300 text-gray-600 hover:bg-gray-50'
+                  ? 'bg-[#D4AF37]/20 border-[#D4AF37]/40 text-[#D4AF37]'
+                  : 'bg-transparent border-neutral-700 text-neutral-400 hover:border-neutral-600'
               }`}
             >
               {w}
             </button>
           ))}
-          <span className="text-xs text-gray-400 ml-2">
+          <span className="text-xs text-neutral-600 ml-2">
             ou arraste as bordas da imagem
           </span>
         </div>

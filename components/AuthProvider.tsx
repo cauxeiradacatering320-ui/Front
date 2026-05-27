@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { useAuthStore } from '../store/authStore';
 import { API_BASE, refreshToken } from '../services/api';
-import { setAuthCookies } from '@/lib/cookies';
+import { setAuthCookies, clearAuthCookies } from '@/lib/cookies';
 
 function isTokenExpired(token: string): boolean {
   try {
@@ -25,8 +25,15 @@ async function verifySession(token: string): Promise<boolean> {
   }
 }
 
+function clearAllAuth() {
+  const { clearAuth } = useAuthStore.getState();
+  clearAuth();
+  clearAuthCookies();
+  localStorage.removeItem('auth-storage');
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const { clearAuth, setLoading } = useAuthStore();
+  const { setLoading } = useAuthStore();
 
   useEffect(() => {
     const initAuth = async () => {
@@ -40,7 +47,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             setLoading(false);
             return;
           }
-          clearAuth();
+          clearAllAuth();
           setLoading(false);
           return;
         }
@@ -50,20 +57,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setLoading(false);
           return;
         }
-        clearAuth();
+        clearAllAuth();
         setLoading(false);
         return;
       }
 
       const success = await refreshToken();
       if (!success) {
-        clearAuth();
+        clearAllAuth();
       }
       setLoading(false);
     };
 
     initAuth();
-  }, [clearAuth, setLoading]);
+  }, [setLoading]);
 
   return <>{children}</>;
 }

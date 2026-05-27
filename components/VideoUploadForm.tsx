@@ -47,49 +47,49 @@ export function VideoUploadForm({ moduloId }: VideoUploadFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-4">
-      <h3 className="font-semibold text-lg">Adicionar Vídeo</h3>
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <h3 className="font-semibold text-lg text-white">Adicionar Vídeo</h3>
 
       {error && (
-        <div className="p-3 bg-red-50 text-red-600 rounded-md text-sm border border-red-100">
+        <div className="p-3 bg-red-900/20 border border-red-900/30 text-red-400 rounded-lg text-sm">
           {error}
         </div>
       )}
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Título do vídeo</label>
+        <label className="block text-sm font-medium text-neutral-300 mb-1.5">Título do vídeo</label>
         <input
           type="text"
           value={titulo}
           onChange={(e) => setTitulo(e.target.value)}
           required
           placeholder="Ex: Introdução ao módulo"
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+          className="w-full px-4 py-2.5 bg-[#050505] border border-neutral-800 rounded-xl text-white placeholder-neutral-600 focus:outline-none focus:border-[#D4AF37]/50 focus:ring-1 focus:ring-[#D4AF37]/30 transition-all"
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Arquivo de vídeo</label>
+        <label className="block text-sm font-medium text-neutral-300 mb-1.5">Arquivo de vídeo</label>
         <input
           type="file"
           accept="video/*"
           onChange={(e) => setFile(e.target.files?.[0] || null)}
           required
-          className="block text-sm text-gray-500 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+          className="block text-sm text-neutral-400 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-[#D4AF37]/10 file:text-[#D4AF37] hover:file:bg-[#D4AF37]/20 file:transition-colors"
         />
-        <p className="text-xs text-gray-400 mt-1">MP4, WebM, etc. Upload direto para Bunny.</p>
+        <p className="text-xs text-neutral-600 mt-1">MP4, WebM, etc. Upload direto para Bunny.</p>
       </div>
 
       <button
         type="submit"
         disabled={creating || !!uploadProgress}
-        className="px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-medium rounded-lg transition-colors disabled:cursor-not-allowed"
+        className="px-6 py-2.5 bg-gradient-to-r from-[#D4AF37] to-[#B87333] text-black font-semibold rounded-lg text-sm hover:shadow-[0_0_25px_rgba(212,175,55,0.3)] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {creating ? 'Criando...' : uploadProgress ? 'Enviando...' : 'Adicionar Vídeo'}
       </button>
 
       {uploadProgress && (
-        <p className="text-sm text-blue-600">{uploadProgress}</p>
+        <p className="text-sm text-[#D4AF37]">{uploadProgress}</p>
       )}
     </form>
   );

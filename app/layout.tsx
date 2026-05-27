@@ -7,8 +7,8 @@ import { QueryProvider } from "@/components/QueryProvider";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Plataforma EAD",
-  description: "Plataforma profissional de EAD",
+  title: "Caxueirada",
+  description: "Caxueirada academia , escola gastronômica",
 };
 
 export default function RootLayout({

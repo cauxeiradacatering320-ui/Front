@@ -24,10 +24,12 @@ export interface Modulo {
   moeda: string;
   gratuito: boolean;
   duracao_acesso_dias: number | null;
+  carga_horaria: number | null;
   status: 'rascunho' | 'publicado' | 'arquivado';
   criado_em: string;
   atualizado_em: string;
   deletado_em: string | null;
+  total_alunos?: number;
 }
 
 export interface CreateModuloData {
@@ -36,6 +38,7 @@ export interface CreateModuloData {
   preco_centavos: number;
   gratuito: boolean;
   duracao_acesso_dias?: number;
+  carga_horaria?: number;
   status: 'rascunho' | 'publicado' | 'arquivado';
 }
 
@@ -45,11 +48,13 @@ export interface UpdateModuloData {
   preco_centavos: number;
   gratuito: boolean;
   duracao_acesso_dias: number | null;
+  carga_horaria: number | null;
   status: 'rascunho' | 'publicado' | 'arquivado';
 }
 
 export interface UpdateConteudoData {
   titulo?: string;
+  content?: string;
 }
 
 export type TipoConteudo = 'video' | 'texto' | 'questao';
@@ -80,6 +85,19 @@ export interface ConteudoComProgresso extends Conteudo {
   progresso_completo: boolean | null;
   progresso_porcentagem: number | null;
   progresso_completado_em: string | null;
+}
+
+export interface Certificado {
+  id: string;
+  usuario_id: string;
+  nome: string;
+  modulo_id: string;
+  codigo: string;
+  pdf_url: string | null;
+  emitido_em: string;
+  criado_em: string;
+  modulo_titulo: string;
+  modulo_carga_horaria: number | null;
 }
 
 export interface Conteudo {
