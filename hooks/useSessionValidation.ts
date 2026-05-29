@@ -17,6 +17,7 @@ export function useSessionValidation() {
     validated.current = true;
 
     fetch(`${API_BASE}/auth/session/verify`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
       credentials: 'include',
     })
       .then((res) => {

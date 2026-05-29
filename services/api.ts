@@ -78,7 +78,14 @@ export async function apiRequest<T>(
 
 export async function verifySession(): Promise<{ valid: boolean; user?: { id: string; nome: string; email: string; role: string } }> {
   try {
+    const token = useAuthStore.getState().accessToken;
+    const headers: Record<string, string> = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
     const response = await fetch(`${API_BASE}/auth/session/verify`, {
+      headers,
       credentials: 'include',
     });
 
