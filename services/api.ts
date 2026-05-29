@@ -1,7 +1,7 @@
 import { useAuthStore } from '../store/authStore';
 import { setAuthCookies, clearAuthCookies } from '@/lib/cookies';
 
-export const API_BASE = process.env.NEXT_PUBLIC_API_NEXT_BACKEND || 'http://localhost:3333/api';
+export const API_BASE = process.env.NEXT_PUBLIC_API_NEXT_BACKEND || '';
 
 const AUTH_ENDPOINTS = ['/auth/login', '/auth/register', '/auth/refresh'];
 
