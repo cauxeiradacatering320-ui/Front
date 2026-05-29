@@ -1,10 +1,7 @@
-import { HeroSection } from "@/components/landing/HeroSection";
-import { ExperienceSection } from "@/components/landing/ExperienceSection";
-import { ModulesSection } from "@/components/landing/ModulesSection";
-import { DifferentialsSection } from "@/components/landing/DifferentialsSection";
-import { MobileExperienceSection } from "@/components/landing/MobileExperienceSection";
-import { FinancialProjectionSection } from "@/components/landing/FinancialProjectionSection";
-import { CTASection } from "@/components/landing/CTASection";
+import { Hero } from "./_components/Hero";
+import { ModulesSection } from "./_components/ModulesSection";
+import { FeaturesSection } from "./_components/FeaturesSection";
+import { CTASection } from "./_components/CTASection";
 
 export const metadata = {
   title: "Academia Caxueirada | A Maior Escola de Gastronomia de Angola",
@@ -13,14 +10,11 @@ export const metadata = {
 
 export default function LandingPage() {
   return (
-    <main className="bg-black text-white min-h-screen overflow-x-hidden">
-      <HeroSection />
-      <ExperienceSection />
+    <div className="flex flex-col w-full overflow-x-hidden">
+      <Hero />
       <ModulesSection />
-      <DifferentialsSection />
-      <MobileExperienceSection />
-      <FinancialProjectionSection />
-      <CTASection />
-    </main>
+      <FeaturesSection />
+      <div id="contato"><CTASection /></div>
+    </div>
   );
 }

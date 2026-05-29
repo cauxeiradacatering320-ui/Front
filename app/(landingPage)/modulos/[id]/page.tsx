@@ -101,11 +101,11 @@ export default function ModuloDetail({ params }: { params: Promise<{ id: string 
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-16">
-      <Link href="/#modulos" className="text-sm text-[#D4AF37] hover:underline mb-6 inline-block">
+      {/* <Link href="/#modulos" className="text-sm text-[#D4AF37] hover:underline mb-6 inline-block">
         &larr; Voltar para a Landing Page
-      </Link>
+      </Link> */}
 
-      <div className="bg-[#201f1f] rounded-2xl shadow-2xl border border-white/10 overflow-hidden text-white relative">
+      <div className="bg-[#201f1f] mt-10 rounded-2xl shadow-2xl border border-white/10 overflow-hidden text-white relative">
         {modulo.thumbnail_url ? (
           <div className="relative w-full h-80">
             <div className="absolute inset-0   z-10" />

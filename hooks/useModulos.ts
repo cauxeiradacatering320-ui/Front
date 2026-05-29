@@ -9,6 +9,7 @@ import {
   createModulo,
   updateModulo,
   uploadThumbnail,
+  deleteModulo,
 } from '@/services/modulo';
 import type { CreateModuloData, UpdateModuloData } from '@/types';
 
@@ -60,6 +61,17 @@ export function useUpdateModulo() {
     mutationFn: ({ id, data }: { id: string; data: UpdateModuloData }) => updateModulo(id, data),
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['modulo', 'admin', variables.id] });
+      queryClient.invalidateQueries({ queryKey: ['modulos', 'admin'] });
+    },
+  });
+}
+
+export function useDeleteModulo() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: string) => deleteModulo(id),
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['modulos', 'admin'] });
     },
   });

@@ -16,8 +16,8 @@ export function useSessionValidation() {
 
     validated.current = true;
 
-    fetch(`${API_BASE}/auth/me`, {
-      headers: { Authorization: `Bearer ${accessToken}` },
+    fetch(`${API_BASE}/auth/session/verify`, {
+      credentials: 'include',
     })
       .then((res) => {
         if (!res.ok) throw new Error('Sessão inválida');

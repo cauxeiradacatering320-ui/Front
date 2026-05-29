@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useModulosAdmin } from '@/hooks/useModulos';
+import { useModulosAdmin, useDeleteModulo } from '@/hooks/useModulos';
 import { formatPriceMask } from '@/utils/format';
 import { useState } from 'react';
 
@@ -13,6 +13,7 @@ const statusStyles: Record<string, string> = {
 
 export default function AdminModulos() {
   const { data: modulos, isLoading, error } = useModulosAdmin();
+  const { mutateAsync: deletar, isPending: deleting } = useDeleteModulo();
   const [status, setStatus] = useState('todos');
 
   const moduloFiltred = modulos?.filter((modulo) =>
@@ -91,28 +92,46 @@ export default function AdminModulos() {
                     </svg>
                   </div>
                 )}
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-semibold text-lg text-white truncate group-hover:text-[#D4AF37] transition-colors">
-                    {modulo.titulo}
-                  </h3>
-                  <p className="text-sm text-neutral-500 truncate mt-1">
-                    {modulo.descricao || 'Sem descrição'}
-                  </p>
-                  <div className="flex items-center gap-3 mt-2">
-                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${statusStyles[modulo.status] || 'bg-neutral-800 text-neutral-400'}`}>
-                      {modulo.status}
-                    </span>
-                    {modulo.carga_horaria && (
-                      <span className="text-xs text-neutral-600">{modulo.carga_horaria}h</span>
-                    )}
-                    <span className="text-sm text-[#D4AF37]">
-                      {modulo.gratuito ? 'Grátis' : `${formatPriceMask(String(modulo.preco_centavos))}KZ`}
-                    </span>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-semibold text-lg text-white truncate group-hover:text-[#D4AF37] transition-colors">
+                      {modulo.titulo}
+                    </h3>
+                    <p className="text-sm text-neutral-500 truncate mt-1">
+                      {modulo.descricao || 'Sem descrição'}
+                    </p>
+                    <div className="flex items-center gap-3 mt-2">
+                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${statusStyles[modulo.status] || 'bg-neutral-800 text-neutral-400'}`}>
+                        {modulo.status}
+                      </span>
+                      {modulo.carga_horaria && (
+                        <span className="text-xs text-neutral-600">{modulo.carga_horaria}h</span>
+                      )}
+                      <span className="text-sm text-[#D4AF37]">
+                        {modulo.gratuito ? 'Grátis' : `${formatPriceMask(String(modulo.preco_centavos))}KZ`}
+                      </span>
+                    </div>
                   </div>
-                </div>
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-neutral-600 group-hover:text-[#D4AF37] transition-colors flex-shrink-0 self-center" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
-                </svg>
+                  <div className="flex items-center gap-1 flex-shrink-0 self-center">
+                    <button
+                      type="button"
+                      disabled={deleting}
+                      onClick={async (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        if (window.confirm(`Tem certeza que deseja excluir "${modulo.titulo}"?`)) {
+                          await deletar(modulo.id);
+                        }
+                      }}
+                      className="p-1.5 rounded-lg text-neutral-600 hover:text-red-400 hover:bg-red-900/20 transition-colors"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                      </svg>
+                    </button>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-neutral-600 group-hover:text-[#D4AF37] transition-colors" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                    </svg>
+                  </div>
               </div>
             </Link>
           ))}

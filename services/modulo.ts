@@ -33,6 +33,7 @@ export async function createModulo(
   formData.append('preco_centavos', String(data.preco_centavos));
   formData.append('gratuito', String(data.gratuito));
   if (data.duracao_acesso_dias) formData.append('duracao_acesso_dias', String(data.duracao_acesso_dias));
+  if (data.carga_horaria) formData.append('carga_horaria', String(data.carga_horaria));
   formData.append('status', data.status);
   if (file) formData.append('file', file);
 
@@ -54,6 +55,10 @@ export async function createModulo(
 
 export async function updateModulo(id: string, data: UpdateModuloData): Promise<Modulo> {
   return apiRequest<Modulo>(`/admin/modulos/${id}`, 'PUT', data);
+}
+
+export async function deleteModulo(id: string): Promise<{ message: string }> {
+  return apiRequest<{ message: string }>(`/admin/modulos/${id}`, 'DELETE');
 }
 
 export async function uploadThumbnail(moduloId: string, file: File): Promise<{ thumbnail_url: string }> {
